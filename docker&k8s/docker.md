@@ -65,4 +65,27 @@
     - docker push시 이름이 일치해야함 
     - 하지만 acesss 가 안될꺼다 왜냐하면 dockerhub의 주인이 아니기 때문
     - 그래서 docker login명령어로 push하려는 컴퓨터에서 dockerhub로그인을 해줘야함 
-  - 
+
+### 볼륨
+  - 익명 볼륨(anonymous volum)
+    - 커맨드 사용법 
+      - docker run -d -p 3000:80 -v /app/feedback --name test test
+      - --v /app/feedback 이것이 익명 볼륨 
+    - Dockerfile에서 사용법  
+      - VOLUM["/app/feedback"]
+    - 익명 볼륨은 컨테이너가 삭제되면 없어짐 
+    - docker volum list를 통해 Volum확인 가능 
+  - 명명된 볼륨(named volum)
+    - 커맨드 사용법
+      - docker run -d -p 3000:80 -v feedback:/app/feedback --rm --name test test
+      - -v feedback:/app/feedback 
+    - 명명된 볼륨은 컨테이너가 삭제되더라도 없어지지 않음
+### 바인드 마운트 
+  - 바인드 마운트 
+    - 데이터 저장및 편집시 사용
+    - 사용법
+      - docker run -d -p 3000:80 -v C:\Users\minyoung\Downloads\data-volumes-01-starting-setup\data-volumes-01-starting-setup:/app --rm --name test test
+      - -v my프로젝트_절대경로:/app/feedback   
+      - 하지만, 이렇게 사용하면 모든 파일을 다 덮어씌운다 
+      - 때문에 익명 볼륨을 같이 사용하여 덮어씌우면 안되는 파일은 아래와 같이 -v를 한번 더 추가하여 특정 파일은 덮어 씌우는 것을 막을 수 있음 
+      - docker run -d -p 3000:80 -v C:\Users\minyoung\Downloads\data-volumes-01-starting-setup\data-volumes-01-starting-setup:/app -v /app/node_modules --rm --name test test
