@@ -121,5 +121,21 @@
     - ex) node_modules 추가
     - ex) .git
 ### 환경 변수 & ".env"파일 작업
-  - 
-  
+  - Dockerfile에 EVN 명령어
+    ```
+     ENV PORT 80  # PORT 환경변수에 80넣기 
+     EXPOSE $PORT # PORT가 환경변수 
+    ```
+    -docker run -d -p 3000:8000 --env PORT=8000  -v feedback:/app/feedback -v C:\Users\minyoung\Downloads\data-volumes-01-starting-setup\data-volumes-01-starting-setup:/app:ro -v /app/node_modules --rm --name test test 
+    - --env PORT=8000 이렇게 해서 server의 port를 하드코딩 안하고 argument로 넣어줄 수 있음(-e도 사용가능)
+    - --env-file ./.env (파일에 적어서 사용도 가능, .env 파일이 있어야함) 
+### 빌드 인수(ARG) 사용하기
+  - Dockerfile에 ARG명령어
+    ```
+     ARG DFFAULT_PORT=80  
+     ENV PORT $DEFAULT_PORT
+     EXPOSE $PORT
+     build
+    ``` 
+    - docker build -t fededback-node:dev --build-arg DEFAULT_PORT=8000 . 
+## 네트워킹:(교차)컨테이너 통신
