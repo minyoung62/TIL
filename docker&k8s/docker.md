@@ -74,18 +74,52 @@
     - Dockerfile에서 사용법  
       - VOLUM["/app/feedback"]
     - 익명 볼륨은 컨테이너가 삭제되면 없어짐 
-    - docker volum list를 통해 Volum확인 가능 
+    - docker volum list를 통해 Volum확인 가능
+    - 익명 볼륨 삭제
+      - 익명볼륨은 --rm 옵션이 있을 때만 자동 삭제된다  
+      - 때문에 docker rm로 컨테이너를 삭제하더라도 익명볼륨은 여전히 존재
+      - 추가로 새로운 컨테이너 생성시 계속적으로 새 익명 볼륨 생성
+      - 이렇게 되면 익명 볼륨이 쌓이기 시작
+      - docker volume rm VOL_NAME or docker volume prune을 통해 볼륨 삭제 가능 
   - 명명된 볼륨(named volum)
     - 커맨드 사용법
       - docker run -d -p 3000:80 -v feedback:/app/feedback --rm --name test test
       - -v feedback:/app/feedback 
     - 명명된 볼륨은 컨테이너가 삭제되더라도 없어지지 않음
+    - 몀명된 볼륨은 Dockerfile에 작성 못함
+    - 컨테이너간 데이터 공유에 사용 가능 
 ### 바인드 마운트 
   - 바인드 마운트 
     - 데이터 저장및 편집시 사용
     - 사용법
       - docker run -d -p 3000:80 -v C:\Users\minyoung\Downloads\data-volumes-01-starting-setup\data-volumes-01-starting-setup:/app --rm --name test test
       - -v my프로젝트_절대경로:/app/feedback   
-      - 하지만, 이렇게 사용하면 모든 파일을 다 덮어씌운다 
-      - 때문에 익명 볼륨을 같이 사용하여 덮어씌우면 안되는 파일은 아래와 같이 -v를 한번 더 추가하여 특정 파일은 덮어 씌우는 것을 막을 수 있음 
+      - 경로에 특수 문자나 공백이 포함된 경우 ""를 이용해 경로 설정      
+### 다른 볼륨 결합 & 병합하기 
+  - 바인드 마운트의 문제
+    - 바인드 마운트를 사용하면 모든 파일을 다 덮어씌운다 
+  - 해결법
+    - 때문에 익명 볼륨을 같이 사용하여 덮어씌우면 안되는 파일은 아래와 같이 -v를 한번 더 추가하여 특정 파일은 덮어 씌우는 것을 막을 수 있음 
       - docker run -d -p 3000:80 -v C:\Users\minyoung\Downloads\data-volumes-01-starting-setup\data-volumes-01-starting-setup:/app -v /app/node_modules --rm --name test test
+      - docker는 더 깊은 경로를 먼저 우선으로함 그래서 -v /app/node_modules 인 익명 볼륨을 먼저 설정해줌 (즉, 바인드 마운트로인해 덮어씌워지지않음)
+      - Dockerfile에서도 설정가능 VOLUME ["/app/node_modules"] 
+### 읽기 전용 볼륨 
+  - 디폴트 볼륨
+    - read - write 제공
+  - 읽기 전용 볼륨
+    - 읽기 전용 볼륨은 호스트 머신에서만 변경이 가능하고 docker 컨테이너 내에서는 읽기만 가능한 것이다  
+    - docker run -d -p 3000:80 -v feedback:/app/feedback -v C:\Users\minyoung\Downloads\data-volumes-01-starting-setup\data-volumes-01-starting-setup:/app:ro -v /app/node_modules --rm --name test test 
+    - C:\Users\minyoung\Downloads\data-volumes-01-starting-setup\data-volumes-01-starting-setup:/app:ro  (:ro 읽기 전용)
+### "COPY"사용 vs 바인드 마운트 사용
+  - Dockerfile 내에 COPY를 없애도 바인드마운트가 있으면 컨테이너가에 어플리케이션이 정상적으로 돌아감 
+  - 그러나 바인드마운트는 개발용임 
+  - 로컬에서 개발을 마치고 서버에 넣을 때는 Dockfile에서 카피가 있어야 어플리케이션이 실행됨(왜냐하면 서버에는 코드가없기때문!)
+  - 추가로 프로덕션 환경에서는 코드가 변경되지않기 때문 (즉, 스냅샷이 컨테이너가 돌아감)
+### dockerignore 파일 사용하기
+  - Dockerfile에서 COPY명령어 사용시 원하지 COPY를 원하지 않는 것은 dockerignore에 넣어줌 
+  - .dockerignore 파일 생성 
+    - ex) node_modules 추가
+    - ex) .git
+### 환경 변수 & ".env"파일 작업
+  - 
+  
