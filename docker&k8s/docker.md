@@ -139,3 +139,23 @@
     ``` 
     - docker build -t fededback-node:dev --build-arg DEFAULT_PORT=8000 . 
 ## 네트워킹:(교차)컨테이너 통신
+  - 로컬호스트머신과 웹 통신하기 
+    - 기본컨테이너(네트워크 설정을하지 않은)는 로컬호스트머신에 작동중인 어플리케이션(DB서버와같은)과 통슨을 못한다
+    - 그러나 웹페이지 및 웹 RESTAPI와는 통신할 수 있다  
+  - 호스트머신 통신 작업을 위한 컨테이너 만들기
+    - mogodb://localhost:27017/test와 같이 일반적인 연결이 아닌,
+    - 도커가 알 수 있는 특별한 주소로 해줘야함(아래와 같이) 
+    - mogodb://host.docker.internal:27017/test
+  - 컨테이너간 통신 
+    - 몽고디비 컨테이너로 실행
+      - docekr run -d --name mongodb -p  mongo --network favorites-net
+      - --network favorites-net 이것을 통해 컨테이너들을 한 네트워크(favorites-net)에 밀어넣어줌
+      - 그러나, favorites-net가 네트워크에 존재하지않으면 만들어야함 (볼륨과 달리 네트워크는 도커에서 자동으로 생성해주지 않음!)
+  - 네트워크 만드는 법
+    - docker network create favorites-net 이것을 이용해 커스텀 네트워크를 만들 수 있음 
+  - 어플리케이션에서 연결방법
+    - 앞서 네트워크도 만들었고 몽고디비도 favorites-net 네트워크 환경에서 실행시켰다.
+    - 그러면 어플리케이션에서 몽고디비로 연결을 해야함
+    - 기존에는 mogodb://localhost:27017/test이렇게 연결하였지만 이제는 같은 네트워크를 사용함으로 localhost대신 컨테이너 이름을 넣어준다 
+    - mogodb://mogodb:27017/test (몽고디비 컨테이너 이름을 mongodb로 했었음) 
+    - 도커에서 자동으로 mongodb이름을 보고 컨테이너의 ip주소로 자동 변환해줌 
