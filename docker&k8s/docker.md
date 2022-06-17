@@ -159,3 +159,34 @@
     - 기존에는 mogodb://localhost:27017/test이렇게 연결하였지만 이제는 같은 네트워크를 사용함으로 localhost대신 컨테이너 이름을 넣어준다 
     - mogodb://mogodb:27017/test (몽고디비 컨테이너 이름을 mongodb로 했었음) 
     - 도커에서 자동으로 mongodb이름을 보고 컨테이너의 ip주소로 자동 변환해줌 
+## Docker Compose
+### Docker Compose 사용 이유
+  - Docker Compose란 ?
+    - 각각의 컨테이너를 한번에 실행하고 멈추는 것
+  - 사용 이유  
+    - 다중컨테이너를 사용하게되면 각각의 컨테이너 마다 run명령어를 해줘야함
+    - 추가로 run명령어시 옵션에 다양한 옵션이 존재하는데 각 컨테이너마다 다름 
+    - 이러한 이유로 옵션을 잘못 설정할 시 그것을 해결하느라 많은 시간을 소비
+    - 이것이 Docker Compose를 사용하는 이유
+### Docker Compose파일 설정하기
+  - docker-compose.yaml파일 생성
+    ``` yaml
+    version: "3.8" # docker-compose version
+    services: # 실행할 container
+      mongodb:
+        image: 'mongo' # 이미지이름 
+        volumes:
+          - data:/data/db
+        environment:
+          MONGO_INIDB_ROOT_USERNAME: max
+          MONGO_INIDB_ROOT_PASSWORD: max
+        #env_file: #환경변수를 파일로 만들때 사용 방법 
+        #  - ./mongo.env 
+      backend:
+        
+      frontend:
+    volumes:
+      data: # named 볼륨을 사용하려면 이렇게 해줘야함
+      
+    ```
+    - --rm -d옵션은 compose에서 디폴트로 제공 
