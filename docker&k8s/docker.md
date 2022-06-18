@@ -182,11 +182,48 @@
           MONGO_INIDB_ROOT_PASSWORD: max
         #env_file: #환경변수를 파일로 만들때 사용 방법 
         #  - ./mongo.env 
+        container_name: mongodb # container 이름 설정 
       backend:
-        
+        build: ./backend #backedn폴더에 Dockerfile을 이용해 빌드해줌  
+        #build: (이렇게도 사용 가능)
+        #  context: ./backend
+        #  dockerfile: Dockerfile-dev
+        #  args:
+        #   some-arg: 1
+        ports: 
+          - '80:80' #(호스트포트:도커포트)
+        volumes:
+          - logs:/app/logs #named 볼륨
+          - ./backend:/app (docker-compose에서는 bound mount를 사용할 때 상대경로를 적용해줄 수 있음)
+          - /app/node_modules # 익명 볼륨 
+        env_file:
+          - ./env/backend.env
+        depends_on:  # docker run에는 없는 명령어(compose에만 있음)
+          - mognodb # backend컨테이너가 mognodb에 의존하기 때문에 디펜던시에 추가해줘야함
       frontend:
+        build ./frontend
+        ports:
+          - '3000:3000'
+        volumes:
+          - ./frontendsrc:/app/src
+        stdin_open: true #(개방형 입력 연결이 필요하다는 옵션)
+        tty: true #(터미널에 연결하는 옵션, stdin_open, tty = -it 옵션과 같은 ) 
+        depends_on:
+          - backend
+      
     volumes:
       data: # named 볼륨을 사용하려면 이렇게 해줘야함
-      
+      logs: # named 볼륨을 사용하려면 이렇게 해줘야함
+ 
     ```
     - --rm -d옵션은 compose에서 디폴트로 제공 
+  - docker-compose 실행
+    - docker-compose.yaml파일에 있는 경로에서 아래의 명령어 실행
+    - docker-compose up [-d]
+      - -d옵션은 detach모드   
+  - docker-compose 종료
+    - docker-compose down [-v]
+      - -v옵션은 볼륨을 제거해줌   
+  - build 옵션
+    - docker  
+   
