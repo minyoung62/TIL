@@ -226,4 +226,49 @@
       - -v옵션은 볼륨을 제거해줌   
   - build 옵션
     - docker  
-   
+ ## "유틸리티 컨테이너"로 작업하기 & 컨테이너에서 명령 실행하기
+ ### 첫 번째 유틸리티 컨테이너 구축
+  - Dockerfile을 생성
+    ``` yml
+    FROM node:14-alpine
+    
+    WORKDIR /app
+    ```
+  - 명령어 실행
+    - docker run -it -v /home/kimminyoung6709/work:/app node-util npm init 
+  - 이 유틸리티를 이용하여 모든 부가 도구를 설치할 필요없이 npm init을 사용가능
+### ENTRYPOINT 활용
+  - Dockerfile
+    ``` yml
+    FROM node:14-alpine
+
+    WORKDIR /app
+
+    ENTRYPOINT ["npm"]                                
+    ```
+  - 명령어 실행
+    -  docker run -it -v /home/kimminyoung6709/work:/app mynpm init
+  - ENTRYPOINT 뒤에 mynpm init이 붙어서 실행됨
+  - docker run -it -v /home/kimminyoung6709/work:/app mynpm install express --save
+    - 이것은 express를 설치 및 패키지를 추가하는 것
+  - 하지만 npm 명령어를 사용할 때 앞에 많은 명령어가 붙음(docker run -it -v /home/kimminyoung6709/work:/app  이런 것들)
+### Docker Compose 사용 
+  - docker-compose.yaml
+    ``` yaml
+    version: "3.8"
+    services:
+      npm:
+        build: ./
+        stdin_open: true
+        tty: true
+        volumes:
+         - ./:/app
+    ```
+  - 명령어
+    - docker-compose run npm init 
+    - docker-compose run --rm npm init (자동으로 삭제) 
+
+## 더 복잡한 설정: Laravel & PHP 도커화 프로젝트
+
+## Docker 컨테이너 배포하기 
+###  
