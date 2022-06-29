@@ -1,0 +1,136 @@
+## Software Architecture
+### The History of IT System
+  - 1960 ~ 1980s: Fragile(깨지기 쉬운), Cowboys 
+    - Mainframe, Hardware
+  - 1990 ~ 2000s: Robust, Distributed
+    - Changes
+  - 2010s ~ : Resilient(탈력적인)/Anti-Fragile, Cloud Native
+    - Flow of value의 지속적인 개선
+  - ![image](https://user-images.githubusercontent.com/61530368/176408256-1333de5a-4613-4d62-8424-4ad7c738e918.png)
+
+### Antifaragile
+  - Auto scaling
+    - ![image](https://user-images.githubusercontent.com/61530368/176408484-2608246a-4ef6-4f7d-929f-63f8886c36bb.png)
+    - 자동 확장성을 가짐
+    - 유지 되어야하는 최소 그룹을 지정 
+    - 특정 이벤트가 있을 때는 서버를 늘림 
+  - Microservices
+    - ![image](https://user-images.githubusercontent.com/61530368/176408674-9a853726-2fdd-4e3d-9804-26bf60f3d92e.png)
+    - 넷플릭스 마이크로서비스 구성도 
+    - 파란색은 서비스간의 연동이나 통신
+    - 초록색은 각각의 마이크로 서비스
+    - 마이크로 서비스는 독립적으로 개발하고 배포
+  - Chaos engineering
+    - ![image](https://user-images.githubusercontent.com/61530368/176409537-05537fed-c432-477c-816f-dee2e563c3a4.png) 
+    - 카오스 엔지니어링이란 시스템이 격격하고 예측하지 못한 상황이라도 견딜 수 있게 구축 되야한다는 것을 의미
+  - Continuous deployments
+    - ![image](https://user-images.githubusercontent.com/61530368/176409673-b191f8e1-b21d-47ab-a23f-64866a3bd50c.png)
+    - 배포 파이프라인 
+## Cloud Native Architecture
+  - 확장 가능한 아키텍처
+    - 시스템의 수평적 확장에 유연
+    - 확장된 서버로 시스템의 부하 분산, 가용성 보장
+    - 시스템 또는, 서비스 애플리케이션 단위의 패키지(컨테이너 기반 패키지)
+    - 모니터링
+  - 탄력적 아키텍처
+    - 서비스 생성 - 통합 - 배포, 비지니스 환경 변화에 대응 시간 단축
+    - 분할 된 서비스 구조
+    - 무상태 통신 프로토콜
+    - 서비스의 추가와 삭제 자동으로 감지
+    - 변경된 서비스 요청에 따라 사용자 요청 처리(동적 처리)
+  - 장애 격리(Fault isolation)
+    - 특정 서비스에 요류가 발생해도 다른 서비스에 영향 주지 않음
+    
+## Cloud Native Application
+  - ![image](https://user-images.githubusercontent.com/61530368/176411449-a1d331c8-12f3-40bc-8d36-975f65717a2a.png)
+  - CI/CD
+    - 지속적인 통합, CI(Continue Integration)
+      - 통합 서버, 소스 관리(SCM), 빌드 도구, 테스트 도구
+      - ex) Jenkins, Team CI, Travis CI
+    - 지속적 배포
+      - Continuous Delivery(패키지화 되어있는 결과를 수작업으로 실행 환경에 배포하는 경우)
+      - Continuous Deployment (운영자의 개입없이 자동 배포되는 경우)
+      - Pipe line   
+    - ![image](https://user-images.githubusercontent.com/61530368/176411956-bd423dbe-6673-45ed-9cde-a66c92dc5c74.png)
+    - 카나리 배포와 블루그린 배포 
+  - DevOps
+    - ![image](https://user-images.githubusercontent.com/61530368/176412757-21eb36bc-a39b-4c16-bd77-1a1dbba2bea5.png)
+  - Container 가상화
+    - ![image](https://user-images.githubusercontent.com/61530368/176413085-fe26d243-5a68-45f2-91d4-a9a55ad16b8c.png)
+    - Traditional Deployment는 OS위에 바로 어플리케이션 실행
+    - Virtualized Deployment는 Hypervisor라는 가상머신위에 Virtual Machine을 실행(VM안에는 각각 운영제체 존재) -> 호스트 머신에 부하를 많이줌 
+    - Container Deployment는 공통적인 라이브러리 등을 공유하여 사용 -> 리소스를 덜 잡아먹음 + 가볍고 빠름
+## 12 Factors
+  - 클라우드 네이티브 어플리케이션을 개발함에 있어서 고려해야할 12가지 요소 (https://12factory.net/)
+  - ![image](https://user-images.githubusercontent.com/61530368/176413807-019fa3b1-99b1-443c-ab8b-3108474d7007.png)
+  - BASE CODE
+    - 자체 레파지토리에 저장된 각 마이크로서비스에 대한 단일 서비스를 의미
+    - 형상관리를 위해 코드를 한곳에서 배포 
+  - DEPENDENCY ISOLATION
+    - 각 마이크로서비스는 자체 종속성을 가지고 패키지 되어있기 때문에 전체 시스템에 영향을 주지않고 변경될 수 있어야함
+  - CONFIGURATIONS
+    - 하드코딩이 아니라 구성관리 도구를 통해서 즉, 외부에서 마이크로서비스를 제어 가능하게
+    - 동일한 서비스가 다른 곳에서도 배포 가능
+  - LINKABLE BACKING SERVICES
+    - 캐시, 메시지 서비스등을 분리하여 코드 디펜던시가 발생하지 않게(?)함
+  - STAGES OF CREATION
+    - 각각은 고유한 태그를 가지고 롤백기능 이있어야함
+    - 추가로 CI/CD를 이용해 자동화해야함
+  - STATELESS PROCESSES
+    - 각 마이크로서비스는 독립적으로 실행 가능해야함
+    - 필요한 자원이 있다면 캐시 서버나 데이터 저장소를 이용해 데이터 동기화
+  - PORT BINDING
+    - 각각의 마이크로서비스는 포트에 자체 포함되어있는 기능이 있어야함  
+    - 이 때문에 각각 독립성을 가질 수 있음
+  - CONCURRENCY
+    - 아무 많은 동일한 서비스를 복사햄 
+    - 이를 통해 부하 분산 가능
+  - DISPOSABILITY
+    - 서비스 인스턴스 자체가 삭제가 가능해야하고
+    - 정상적으로 종료가능한 상태여야 한다 
+    - 컨테이너를 사용한다고하면 서비스에 인스턴스를 실행하고 삭제가 가능해야함
+  - DEVELOPMENT & PRODUCTION PARITY
+    - 개발과 실제 서비스환경을 분리  
+  - LOGS
+    - 마이크로서비스로인해 생성된 로그를 이벤트 스트림으로 처리해야함 
+    - 별도의 추가적인 모니터링을 사용
+  - ADMIN PROCESSES FOR EVENTUAL PROCESSES
+    - 관리 도구가 있어야함 (리포트, 데이터정리, 데이터분석기능... 등이 필요)
+  - 12 Factor + 3
+    - 요즘은 3개가 더 추가됨
+    - API first
+    - Telemetry (관리자항목과 비슷하지만 수치화가 되어있어야함)
+    - Authentication and authorization (마이크로서비스로 구현된다 하더라도 인증 인가 작업 필수) 
+
+## Monolithic vs Microservice
+  - Monolith Architecture
+    - ![image](https://user-images.githubusercontent.com/61530368/176417191-606ad930-6f7f-404f-b9e1-47726814beac.png)
+    - 모든 업무 로직이 하나의 애플리케이션 형태로 패키지 되어 서비스
+    - 애플리케이션에서 사용하는 데이터가 한곳에 모여 참조되어 서비스되는 형태 
+  - Microservices
+    - 비지니스 로직 별로 어플리케이션을 분리  
+    - 다른 언어 프로그래밍으로 개발 가능  
+    - 서비스의 내용을 분리 
+    - 유지보수 변경사항 적용이 용이
+    - 비지니스의 특정 로직이 변경되어 새로 개발되고 배포되었을 때 필요한 부분에만 개발하고 독립적으로 배포 가능 
+    - 어플리케이션 전체가 다운되는거를 막을 수 있음 
+  - 정리
+    - ![image](https://user-images.githubusercontent.com/61530368/176418806-4cdc1cf2-1844-47fb-acbb-c22c7447edcd.png)
+    - ![image](https://user-images.githubusercontent.com/61530368/176419059-1190d9af-de40-4fe2-9955-06b9debeeced.png)
+
+## Microservice Architecture란?
+  - Microservice의 특징
+    - Challenges
+    - Small Well chosen Deployable Units
+    - Bounded Context
+    - RESTful
+    - COnfiguration Management
+    - Cloud Enabled
+    - Dynamic Scale Up And Scale Down
+    - CI/CD
+    - Visibility 
+## SOA vs MSA
+  - 서비스의 공유 지향점
+    - SOA : 재사용을 통한 비용 절감
+    - MSA : 서비스 간의 결합도를 낮추어 변화에 능동적으로 대응 
+    - ![image](https://user-images.githubusercontent.com/61530368/176421602-d1f285ff-7941-4cd0-999f-80e3c5027cc1.png)
