@@ -4,7 +4,7 @@
     - Mainframe, Hardware
   - 1990 ~ 2000s: Robust, Distributed
     - Changes
-  - 2010s ~ : Resilient(탈력적인)/Anti-Fragile, Cloud Native
+  - 2010s ~ : Resilient(탄력적인)/Anti-Fragile, Cloud Native
     - Flow of value의 지속적인 개선
   - ![image](https://user-images.githubusercontent.com/61530368/176408256-1333de5a-4613-4d62-8424-4ad7c738e918.png)
 
