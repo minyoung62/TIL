@@ -131,6 +131,26 @@
     - Visibility 
 ## SOA vs MSA
   - 서비스의 공유 지향점
-    - SOA : 재사용을 통한 비용 절감
-    - MSA : 서비스 간의 결합도를 낮추어 변화에 능동적으로 대응 
+    - SOA - 재사용을 통한 비용 절감
+    - MSA - 서비스 간의 결합도를 낮추어 변화에 능동적으로 대응 
     - ![image](https://user-images.githubusercontent.com/61530368/176421602-d1f285ff-7941-4cd0-999f-80e3c5027cc1.png)
+  - 기술 방식
+    - SOA - 공통의 서비스를 ESB에 모아 사업 측면에서 공통 서비스 형식으로 서비스 제공
+    - MSA - 각 독립된 서비스가 노출된 REST API를 사용
+    - ![image](https://user-images.githubusercontent.com/61530368/176430495-406d297b-1d80-4030-a144-91013860af36.png)
+  - ![image](https://user-images.githubusercontent.com/61530368/176431720-dacbeef6-03c0-4ffe-a2f0-fe50833d596b.png)
+
+## Microservice Architecture Structures
+  - MSA 표준 구성요소
+    - ![image](https://user-images.githubusercontent.com/61530368/176432017-393be2d1-4f1d-4ce6-ab1e-83b5260b6350.png)
+  - Service Mesh Capabilities
+    - ![image](https://user-images.githubusercontent.com/61530368/176432359-599fd8df-df19-49b9-9cbd-2cca8ef88145.png)
+    - MSA 인프라 -> 미들웨어
+      - 프록시 역할, 인증, 권한 부여, 암호화, 서비스 검색, 요청 라우팅, 로드 밸런싱
+      - 자가 치유 복구 서비스
+    - 서비스간의 통신과 관련된 기능을 자동화   
+  - CNCF(Cloud Native Computing Foundation)
+    - Cloud Native Interactive Landscape
+    - https://landscape.cncf.io/
+  - MSA 기반 기술
+    - ![image](https://user-images.githubusercontent.com/61530368/176432993-99680a09-2a38-4963-81dd-8c2fae12175e.png)
