@@ -10,4 +10,7 @@
       - ![image](https://user-images.githubusercontent.com/61530368/176659357-4486054a-fee8-43a7-ad6e-53e646eba0b9.png)
       - 2번줄 port 설정
       - 6번줄 마이크로 서비스는 각각 고유한 아이디 필요 discoveryservice로 이름 설정
-      - 
+      - 10, 11번줄 register-with-uereka: false, fetch-registry: false로 하지않으면 eureka서버에 자기자신을 등록함(이것은 자기자신을 굳이 등록할 필요없기 때문에 설정해주는 것)
+  - 실행화면
+    - ![image](https://user-images.githubusercontent.com/61530368/176661288-3b7ed667-cea2-49a4-83af-fa58e8761542.png)
+ 
