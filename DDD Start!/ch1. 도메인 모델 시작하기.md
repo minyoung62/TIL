@@ -214,13 +214,325 @@
     - 이는 Order를 생성할 때 OrderLine의 목록뿐만 아니라 ShippingInfo도 함께 전달해야 함을 의미
     ``` java
     public class Order{
-    
+      private List<OrderLine> orderLines;
+      private Shipping shippingInfo;
+      ...
+      
+      public Order(List<OrderLine> orderLines, ShippingInfo shippingInfo) {
+        setOrderLines(orderLines);
+        setShippingInfo(shippingInfo);
+      }
+      
+      private void setShippingInfo(ShippingInfo shippingInfo) {
+        if (shippingInfo == null) 
+          throw new IllegalArgumentException("no ShippingInfo");
+        this.shippingInfo = shippingInfo;
+      }
+    ```
+  - 주문 요구사항에서의 제약과 규칙
+    - 출고를 하면 배송지 정보를 변경할 수 없다
+    - 출고 전에 주문을 취소할 수 없다
+  - 상태와 관련있는 요구사항
+    - 고객이 결제를 완료하기 전에는 상품을 준비하지 않는다
+    ``` java
+    public enum OrderState {
+      PAYMENT_WAITING, PREPARING, SHIPPED, DELIVERING, DELIVERY_COMPLETED;
     }
-   ```
+    ```
+    ``` java
+    public class Order {
+      private OrderState state;
+      
+      public void changeShippingINfo(ShippingInfo newShippingInfo) {
+        verifyNotYetShipped();
+        setShippingINfo(newShippingInfo);
+      }
+      
+      public void cancel() {
+        verifyNotYetShipped();
+        this.state = OrderState.CANCELED;
+      }
+      
+      private void verifyNotYetShipped() {
+        if (state != OrderState.PAYMENT_WAITING && state != OrderState.PREPARING)
+          throw new IllegalStateException("aleary shipped");
+      }
+    }
+    ```
+    
 ## 1.6 엔티티와 밸류
-  ### 1.6.1 엔티티
-  ### 1.6.2 엔티티의 식별자 생성자
-  ### 1.6.3 밸류 타입
-  ### 1.6.4 엔티티 식별자와 밸류 타입
-  ### 1.6.5 도메인 모델에 set 메서드 넣지 않기
+### 1.6.1 엔티티
+  - 도출한 모델은 엔티티와 벨류로 구분 가능
+  - 엔티티
+    - 엔티티의 특징은 식별자를 가진다 
+    - 식별자는 엔티티 객체마다 교유해서 각 엔티티는 서로 다른 식별자를 갖는다 
+    - 예를들어 주문에서 배송지 주소가 바뀌거나 상태가 바뀌더라도 주문번호가 바뀌지는 않는 것처럼 엔티티의 식별자는 바뀌지 않음
+    - 엔티티를 구현한 클래스는 다음과 같이 식별자를 이용해서 equals() 메서드와 hashCode() 메서드를 구현할 수 있음
+    ``` java
+    public class Order {
+      private String orderNumber;
+      
+      @Override
+      public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (obj.getClass() != Order.class) return false;
+        Order other = (Order)obj;
+        if (this.orderNumber == null) return false;
+        return this.orderNumber.equals(other.orderNumber);
+       
+      }
+      
+      @Override
+      public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((orderNumber == null) ? 0 " orderNumber.hashCode());
+        return result;
+      }
+    }
+    ```
+### 1.6.2 엔티티의 식별자 생성자
+  - 엔티티 식별자 생성 방식 
+    - 특정 규칙에 따라 생성
+    - UUID나 Nano ID와 같은 고유 식별자 생성기 사용
+    - 값을 직접 입력
+    - 일련번호 사용(시퀀스나 DB의 자동 증가 컬럼 사용)
+  - 주문번호, 운소장번호, 카드번호와 같은 식별자는 특정 규칙에 따라생성
+  - UUID 식별자 생성
+    - 자바는 java.util.UUID 클래스를 사용해 UUID를 생성할 수 있음
+    ``` java
+    UUID uuid = UUID.randomUUID();
+    String strUuid = uuid.toString();
+    ```
+  - 회원의 아이디나 이메일과 같은 식별자 값은 직접 입력
+  - 데이터베이스에 저장할 때 자동으로 증가 칼람을 사용하여 식별자로 사용 가능
+### 1.6.3 밸류 타입
+  - ShippingInfo 클래스는 다음과 같이 받는 사람과 주소에 대한 데이터를 갖고 있음
+    ``` java
+    public class ShippingInfo {
+      private String receiverName;
+      private String receiverPhoneNumber;
+      private String shippingAddress1;
+      private String shippingAddress2;
+      private String shippingZipcode;
+    }
+    ```
+    - receiverName와 receiverPhoneNumber는 서로 다른 두 데이터를 담고 있지만 개념적으로 받는 사람을 의미
+    - shippingAddress1, shippingAddress2, shippingZipcode 또한 주소라는 하나의 개념을 표현
+    - 벨류 타입은 개념적으로 완전한 하나를 표현할 때 사용
+  - Receiver 
+    ``` java
+    public class Receiver {
+      private String name;
+      private String phoneNumber;
+      
+      public Receiver(String name, String phoneNumber) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+      }
+      
+      public String getName() {
+        return name;
+      }
+      
+      public String getPhoneNumber() {
+        return phoneNumber;
+      }
+    }
+    ```
+    - Receiver는 '받는 사람'이라는 도메인 개념을 표현
+  - Address
+    ``` java
+    public class Address {
+      private String address1;
+      private String address2;
+      private String zipcode;
+      
+      public Address(String address1, String address2, String zipcode) {
+        this.address1 = address1;
+        this.address2 = address2;
+        this.zipcode = zipcode;
+      }
+    }
+    ```
+  - ShippingInfo
+    ``` java
+    public class ShippingInfo {
+      private Receiver receiver;
+      private Address address;
+    }
+    ```
+  - 밸류 타입이 꼭 두 개 이상의 데이터를 가져야하는 것은 아님 
+  - 아래의 OrderLin이 좋은 예 
+  - OrderLine
+    ``` java
+    public class OrderLine {
+      private Product product;
+      private int price;
+      private int quantity;
+      private int amount;
+    }
+    ```
+    - OrderLIne의 price와 amounts는 int 타입의 숫자를 사용하고 있지만 이들은 '돈'을 의미하는 값 
+    - 따라서 '돈'을 의미하는 Money 타입을 만들어서 사용하면 코드를 이해하는 데 도움이 됨
+  - Money
+    ``` java
+    public class Money {
+      private int value;
+      
+      public Money(int value) {
+        this.money = money
+      }
+      
+      public int getValue() {
+        return this.value;
+      }
+    }
+    ```
+  - 아래는 Money를 사용하도록 OrderLine을 변경한 코드
+  - Money 타입 덕에 price나 amount가 금액을 의미한다는 것을 쉽게 알 수 잇음
+  - OrderLine
+    ``` java
+    public class OrderLine {
+      private Product product;
+      private Money price;
+      private int quantity;
+      private Money amounts;
+    }
+    ```
+  - 밸류 타입으 ㅣ또 다른 장점은 밸류 타입을 위한 기능을 추가할 수 있다는 것이다.
+  - 예를 들어 Money 타입은 다음과 같이 돈 계산을 위한 기능을 추가할 수 있음
+  - Money
+    ``` java
+    public class Money {
+      private int value;
+      
+      public Money add(Money money) {
+        return new Money(this.value + moeny.value)
+      }
+      
+      public Money multiply(int multiplier) {
+        return new Money(value * multiplier);
+      }
+    }
+    ```
+    - Money를 사용하는 코드는 이제 '정수 타입 연산'이 아니라 '돈 계산'이라는 의미로 코드를 작성할 수 있다
+  - 밸류 객체의 데이터를 변경할 때는 기존 데이터를 변경하기보다는 변경한 데이터를 갖는 새로운 밸류 객체를 생성하는 방식을 선호
+  - Money처럼 데이터 변경 기능을 제공하지 않는 타입을 불변(immutable)이라고 함
+  - 불변으로 구현하는 가장 중요한 이유는 안전한 코드를 적상할 수 있다는데 있음
+    ``` java
+    Money price = ...;
+    OrderLine line = new OrderLine(product, price, quantity);
+    // 만약 price.setValue(0)로 값을 변경할 수 있다면?
+    ```
+    - 그런데 만약 Money가 setValue()와 같은 메서드를 제공해서 값을 변경할 수 있따면
+    ``` java
+    Money price = new Money(1000)
+    OrderLine line = new OrderLine(product, price, 2); #[price=1000, quantity=2, amounts=2000]
+    price.setValue(2000);                              #[price=2000, quantity=2, amounts=2000]
+    ```
+    - 이런 문제가 발생한다 때문에 이러한 문제가 발생하는 것을 방지하려면 새로운 Moneyr 객체를 생성하도록 코드를 작성해야한다
+    ``` java
+    public class OrderLine {
+      ...
+      private Money price;
+      
+      public OrderLine(Product product, Money price, int quantity) {
+        this.product = product;
+        // Money가 불변 객체가 아니라면,
+        // price 파라미터가 변경될 때 발생하는 문제를 방지하기 위해
+        // 데이터를 복사한 새로운 객체를 생성해야 한다
+        this.rpice = new Money(price.getValue());
+        this.quantity = quantity;
+        this.amounts = calculateAmounts();
+      }
+    }
+    ```
+    - Money가 불변이라면 이런 코드를 작성할 필요가 없음
+    - Money의 데이터를 바꿀 수 없기 때문에 파라미터로 전달받은 price를 안전하게 사용가능
+  - 두 밸류 객체를 비교
+    ``` java
+    public class Receiver {
+      private String name;
+      private String phoneNumber;
+      
+      pbulic boolean equals(Object other) {
+        if(other == null) return false;
+        if(this == other) return true;
+        if(!(other instanceof Receiver)) return false;
+        Receiver that = (Receiver)other;
+        return this.name.equals(that.name) &&
+            this.phoneNumber.equals(that.phoneNumber)
+      } 
+    ]
+    ```
+### 1.6.4 엔티티 식별자와 밸류 타입
+  - 엔티티 식별자의 실제 데이터는 String과 같은 문자열로 구성된 경우가 많다
+  - 신용카드 번호 16개의 숫자로 구성된 문자열이며 온라인 서비스에서 회원을 구분할 때는 이메일 주소도 문자열 
+    ``` java
+    public class Order {
+      // OrderNo 타입 자체로 id가 주문번호임을 알 수 있다
+      private OrderNo id;
+      ...
+      public OrderNo getId() {
+        return id;
+      }
+    ```
+    - OrderNo 대신에 String 타입을 사용한다면 id라는 이름만으로는 해당 필드가 주문번호인지 알기 힘듦
+    - OrderNo 타입을 만들면 타입 자체로 주문번호인 것을 알 수 있음
+### 1.6.5 도메인 모델에 set 메서드 넣지 않기
+  - changeShippingInfo()가 배송지 정보를 새로 변경한다는 의미를 가졌다면 setShippingInfo() 메서드는 단순히 배송지 값을 설정한다는 것을ㅇ ㅢ미
+  - set 메서드의 또 다른 문제는 도메인 객체를 생성할 때 온전하지 않은 상태가 될 수 있음 
+    ``` java
+    // set 메서드로 데이터를 전달하도록 구현하면
+    // 처음 Order를 생성하는 시점에서 order는 완전하지 않다
+    Order order = new Order();
+    
+    // set 메서드로 필요한 모든 값을 전달해야 함
+    order.setOrderLine(lines);
+    order.setShippingInfo(shippingInfo);
+    
+    // 주문자(Orderer)를 설정하지 않은 상태에서 주문 완료 처리
+    order.setState(OrderState.PREPARING);
+    ```
+    - 위 코드는 주만자 설정을 누락하고 있다
+    - 주문자 정보를 담고 있는필드인 orderer가 null인 상황에서 order.setState()메서드를 호출해서 상품 준비 중 상태로 바꾼 것
+    - orderer가 정상인지 확인하기 위해 ordererrk null인지 검사하는 코드를 setState() 메서드에 위치하는 것도 맞지 않음
+  - 도메인 객체가 불완전한 상태로 사용되는 것을 막으려면 생성 시점에 필요한 것을 전달해 주어야 한다.
+  - 생성자로 필요한 것을 모두 받으므로 생성자를 호출하는 시점에서 필요한 데이터가 올바른지 검사할 수 있음
+    ``` java
+    public class Order {
+      public Order(Orderer orderer, List<OrderLine> orderLines, ShippingInfo shippingInfo, OrderState state) {
+        setOrderer(orderer);
+        setOrderLines(orderLines);
+        ...// 다른 설정
+      }
+      
+      private void setOrderer(Orderer orderer) {
+        if (orderer == null) throw new IllegalArgumentException("no orderer");
+        this.orderer =orderer;
+      }
+      
+      private void setOrderLines(List<OrderList> orderLines) {
+        verfyAtLesatOneOrMoreOrderLines(orderLines);
+        this.orderLines = orderLines;
+        calculateTotalAmounts();
+      }
+      
+      private void verifyAtLeastOneOrMoreOrderLines(List<OrderLine> orderLines) {
+        if(orderLines = null || orderLines.isEmpty()) {
+          throw new IllegalArgumentException("no OrderLine");
+        }
+      }
+      
+      private void calculateTotalAmounts() {
+          ...
+      }
+    }
+    
+    ```
+    - 이 코드의 set메서드는 앞서 언급한 set메서드와 차이점은 접근 점위가 private라는 것이다 
 ## 1.7 도메인 용어와 유비쿼터스 언어
+  - 에릭 에반스는 도메인 주도 설계에서 언어의 중요함을 강조하기 위해 유비쿼터스 언어라는 용어를 사용했다
+  - 전문가, 관계자, 개발자가 도메인과 관련된 공통의 언어를 만들고 이를 대화, 문서, 도메인 모델, 코드, 테스트 등 모든 곳에서 같은 용어를 사용 
