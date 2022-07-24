@@ -1,0 +1,22 @@
+## Spring cloud bus
+  - Actuator refresh를 이용하면 각각의 어플리케이션마다 수동으로 리프레쉬를 해줘야함 
+  - 그러나 Spring cloud bus는 분산 시스템의 노드를 경량 메시지 브로커와 연결
+  - 상태 및 구성에 대한 변경 사항을 연결된 노드에게 전달(Broadcast)
+  - AMQP(Advanced Message Queuing Protocol), 메시지 지향 미들웨어를 위한 개방형 표준 응용 계층 프로토콜
+    - 메시지 지향, 큐잉, 라우팅(P2P, Publisher-Subcriber), 신뢰성, 보안
+    - Erlang, RabbitMQ에서 사용
+  - Kafka 프로젝트
+    - Apache Software Foundation이 Scalar 언어로 개발한 오픈 소스 메시지 브로커 프로젝트
+    - 분산형 스트리밍 플랫폼 
+    - 대용량의 데이터를 처리 가능한 메시징 시스템 
+  - RabbitMQ vs Kafka
+    - RabbitMQ
+      - 메시지 브로커
+      - 초당 20+ 메시지를 소비자에게 전달
+      - 메시지 전달 보장, 시스템 간 메시지 전달
+      - 브로커, 소비자 중심
+    - Kafka
+      - 초당 100K+ 이상의 이벤트 처리
+      - Pub/Sub, Topic에 메시지 전달
+      - Ack를 기다리지 않고 전달 가능
+      - 생산자 중심   
