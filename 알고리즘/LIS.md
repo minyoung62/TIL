@@ -14,7 +14,6 @@
   - 때문에, 총 O(n^3)의 시간복잡도가 나온다.
 ### 개선 방법
   - dp테이블을 활용하여 현재 위치를 가장 긴 증가하는 부분 수열의 증가 횟수로 생각하면 증가하는 부분 수열인지 확인하는 경우가 걸리는 O(n)을 O(1)로 줄일 수 있다. 
- 
 
 ### 개선된 코드(dp활용)
   ``` python
@@ -23,15 +22,17 @@
   a = list(map(int, input().split()))
 
   #dp[i]:= i번째 위치는 가장 긴 증가하는 부분 수열의 증가 횟수 
-  dp = [0] * n 
-  dp[0] = 1
+  dp = [0] * n
+  
+  # dp table init(자기자신은 증가 횟수가 1로 초기화)
+  for i in range(n):
+    dp[i] = 1
 
+  # dp table 채우기
   for i in range(1, n):
       for j in range(i):
           if a[i] > a[j]:
               dp[i] = max(dp[i], dp[j] + 1)
-          else:
-              dp[i] = max(dp[i], 1)
 
   print(max(dp))
   ```
